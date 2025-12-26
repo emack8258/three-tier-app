@@ -1,1 +1,3 @@
-/.venv
+# Remove sensitive files
+./.venv
+./tmp

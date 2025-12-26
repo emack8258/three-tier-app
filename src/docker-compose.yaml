@@ -1,0 +1,55 @@
+services:
+  db:
+    # Build DB image
+    image: mongo:latest
+    container_name: mongodb_tier
+    ports:
+      - "27017:27017"
+    # Configuration for the deployment of services
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50' # Limit to 50% of a single CPU core
+          memory: 512M
+
+  backend:
+    build: 
+      context: ./backend  # Check inside backend directory
+      dockerfile: django.Dockerfile
+    container_name: django_tier
+    volumes:
+      - ./backend:/app  # Sync code with container
+    ports:
+      - '7000:7000'
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+  frontend:
+    # Build from front-end Docker file
+    build: 
+      context: .
+      dockerfile: flask.Dockerfile
+    container_name: flask_tier
+    # Ensure Flask is told to rn on 1400
+    command: flask run --host=0.0.0.0 --port=1400
+    # Open ports
+    ports:
+      - "1400:1400"
+    # Set environment variable to api url
+    environment:
+      - API_URL=http://backend:7000/api/text-docs/
+      - FLASK_APP=app.py
+    # Attribute controlling the order of service startup/shutdown
+    depends_on:
+      - backend
+    # Configuration for the deployment of services
+    deploy:
+      # Configures physical resources for container
+      resources:
+        limits:
+          cpus: '0.25' # Frontend is lightweight
+          memory: 256M

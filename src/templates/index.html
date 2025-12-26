@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Three-Tier App</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; line-height: 1.6; }
+        .card { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Text from MongoDB</h1>
+
+    <div id="display-area">
+        {% for doc in documents %}
+            <div class="card">
+                <p>{{ doc.content }}</p>
+                <small>ID: {{ doc.id }}</small>
+            </div>
+        {% else %}
+            <p>No text found in the database yet.</p>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <h3>Add New Text</h3>
+    <form action="/add" method="POST">
+        <input type="text" name="content" required placeholder="Type something...">
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
